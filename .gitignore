@@ -13,7 +13,7 @@ build/
 .out/
 .vscode/
 .vercel/
-
+coverage
 # Variáveis de ambiente
 .env
 .env.local
