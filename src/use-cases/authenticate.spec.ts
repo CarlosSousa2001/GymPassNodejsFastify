@@ -1,4 +1,4 @@
-import { expect, test, describe, it } from 'vitest'
+import { expect, test, describe, it, beforeEach } from 'vitest'
 import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-users-repository'
 import { AuthenticateUseCase } from './authenticate'
 import { hash } from 'bcryptjs'
@@ -6,12 +6,18 @@ import { InvalidCredentialsError } from './erros/invalid-credentials-error'
 
 // sut = principal variavel testada
 
+let usersRepository: InMemoryUsersRepository
+let sut: AuthenticateUseCase
+
 describe('Authenticate Use Case', () => {
 
-    it("should be able to authenticate", async () => {
+    beforeEach(() => { // usando dessa forma eu nao repito o codigo da instanciação das classes e isolo o contexto para cada um antes de cada teste
+        usersRepository = new InMemoryUsersRepository()
+        sut = new AuthenticateUseCase(usersRepository)
+   })
 
-        const usersRepository = new InMemoryUsersRepository()
-        const sut = new AuthenticateUseCase(usersRepository)
+
+    it("should be able to authenticate", async () => {
 
         await usersRepository.create({
             name: "John Doe",
@@ -30,9 +36,6 @@ describe('Authenticate Use Case', () => {
 
     it("should not be able to authenticate with wrong email", async () => {
 
-        const usersRepository = new InMemoryUsersRepository()
-        const sut = new AuthenticateUseCase(usersRepository)
-
         await usersRepository.create({
             name: "John Doe",
             email: 'johndoe@example.com',
@@ -48,9 +51,6 @@ describe('Authenticate Use Case', () => {
 
 
     it("should not be able to authenticate with wrong password", async () => {
-
-        const usersRepository = new InMemoryUsersRepository()
-        const sut = new AuthenticateUseCase(usersRepository)
 
         await usersRepository.create({
             name: "John Doe",
