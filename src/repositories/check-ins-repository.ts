@@ -4,4 +4,5 @@ import { CheckIn, Prisma, User } from "@prisma/client";
 // CheckInCreateInput tras a entidade, no caso devo usar quando apartir de uma entidade eu queria criar outra
 export interface CheckInRepository {
     create(data:Prisma.CheckInUncheckedCreateInput): Promise<CheckIn>
+    findByUserIdOnDate(userId:string, date: Date): Promise<CheckIn | null>
 }
