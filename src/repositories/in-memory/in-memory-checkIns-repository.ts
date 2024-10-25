@@ -20,13 +20,18 @@ export class InMemoryCheckInsRepository implements CheckInRepository {
             const isOnSameDate = checkInDate.isAfter(startOfTheDay) && checkInDate.isBefore(endOfTheDat)
 
             return checkIn.user_id === userId && isOnSameDate
-    })
+        })
         if (!checkInOnSameDate) {
             return null
         }
         return checkInOnSameDate
     }
 
+    async findManyByUserId(userId: string, page: number) {
+        return this.items
+            .filter((checkIn) => checkIn.user_id === userId)
+            .slice((page - 1) * 20, page * 20)
+    }
     async create(data: Prisma.CheckInUncheckedCreateInput) {
         const checkIn = {
             id: randomUUID(),
