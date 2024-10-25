@@ -3,6 +3,8 @@ import { CheckInUseCase } from './check-in'
 import { InMemoryCheckInsRepository } from '@/repositories/in-memory/in-memory-checkIns-repository'
 import { inMemoryGymsRepository } from '@/repositories/in-memory/in-memory-gyms-repository'
 import { Decimal } from '@prisma/client/runtime/library'
+import { MaxDistanceError } from './erros/max-distance-error'
+import { MaxNumberOffCheckInError } from './erros/max-number-off-check-ins-error'
 
 // sut = principal variavel testada
 
@@ -12,18 +14,18 @@ let sut: CheckInUseCase
 
 describe('Check-in Use Case', () => {
 
-    beforeEach(() => { // usando dessa forma eu nao repito o codigo da instanciação das classes e isolo o contexto para cada um antes de cada teste
+    beforeEach(async () => { // usando dessa forma eu nao repito o codigo da instanciação das classes e isolo o contexto para cada um antes de cada teste
         checkInRepository = new InMemoryCheckInsRepository()
         gymsRepository = new inMemoryGymsRepository()
         sut = new CheckInUseCase(checkInRepository, gymsRepository)
 
-        gymsRepository.items.push({
+        await gymsRepository.create({
             id: "01",
             title: "JS gym",
             description: "Acedemia legal",
             phone: '',
-            latitude: new Decimal(-2.555035),
-            longitude: new Decimal(-44.184913)
+            latitude: -2.555035,
+            longitude: -44.184913
         })
 
         vi.useFakeTimers() // mocks de data
@@ -68,7 +70,7 @@ describe('Check-in Use Case', () => {
             gymId: "01",
             userLatitude: -2.555035,
             userLongitude: -44.184913
-        })).rejects.toBeInstanceOf(Error)
+        })).rejects.toBeInstanceOf(MaxNumberOffCheckInError)
 
     })
 
@@ -117,7 +119,7 @@ describe('Check-in Use Case', () => {
             gymId: "01",
             userLatitude: -2.563498,
             userLongitude: -44.182656
-        })).rejects.toBeInstanceOf(Error)
+        })).rejects.toBeInstanceOf(MaxDistanceError)
 
     })
 
