@@ -1,17 +1,30 @@
 import { expect, test, describe, it, beforeEach, vi, afterEach } from 'vitest'
-import { CheckInProfileUseCase } from './check-in'
+import { CheckInUseCase } from './check-in'
 import { InMemoryCheckInsRepository } from '@/repositories/in-memory/in-memory-checkIns-repository'
+import { inMemoryGymsRepository } from '@/repositories/in-memory/in-memory-gyms-repository'
+import { Decimal } from '@prisma/client/runtime/library'
 
 // sut = principal variavel testada
 
 let checkInRepository: InMemoryCheckInsRepository
-let sut: CheckInProfileUseCase
+let gymsRepository: inMemoryGymsRepository
+let sut: CheckInUseCase
 
 describe('Check-in Use Case', () => {
 
     beforeEach(() => { // usando dessa forma eu nao repito o codigo da instanciação das classes e isolo o contexto para cada um antes de cada teste
         checkInRepository = new InMemoryCheckInsRepository()
-        sut = new CheckInProfileUseCase(checkInRepository)
+        gymsRepository = new inMemoryGymsRepository()
+        sut = new CheckInUseCase(checkInRepository, gymsRepository)
+
+        gymsRepository.items.push({
+            id: "01",
+            title: "JS gym",
+            description: "Acedemia legal",
+            phone: '',
+            latitude: new Decimal(0),
+            longitude: new Decimal(0)
+        })
 
         vi.useFakeTimers() // mocks de data
     })
@@ -22,11 +35,14 @@ describe('Check-in Use Case', () => {
 
     it("should be able to check in", async () => {
 
+
         vi.setSystemTime(new Date(2024, 0, 12, 8, 0, 0))
 
         const { checkIn } = await sut.execute({
             userId: "01",
-            gymId: "01"
+            gymId: "01",
+            userLatitude: 0,
+            userLongitude: 0
         })
 
         expect(checkIn.id).toEqual(expect.any(String))
@@ -41,13 +57,17 @@ describe('Check-in Use Case', () => {
 
         await sut.execute({
             userId: "01",
-            gymId: "01"
+            gymId: "01",
+            userLatitude: 0,
+            userLongitude: 0
         })
 
 
         await expect(() => sut.execute({
             userId: "01",
-            gymId: "01"
+            gymId: "01",
+            userLatitude: 0,
+            userLongitude: 0
         })).rejects.toBeInstanceOf(Error)
 
     })
@@ -60,14 +80,18 @@ describe('Check-in Use Case', () => {
 
         await sut.execute({
             userId: "01",
-            gymId: "01"
+            gymId: "01",
+            userLatitude: 0,
+            userLongitude: 0
         })
 
         vi.setSystemTime(new Date(2024, 0, 14, 8, 0, 0))
 
         const { checkIn } = await sut.execute({
             userId: "01",
-            gymId: "01"
+            gymId: "01",
+            userLatitude: 0,
+            userLongitude: 0
         })
 
 
