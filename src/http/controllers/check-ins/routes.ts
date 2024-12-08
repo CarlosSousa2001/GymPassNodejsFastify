@@ -9,7 +9,7 @@ import { metric } from "./metrict";
 export async function checkInsRoutes(app: FastifyInstance) {
     app.addHook('onRequest', verifyJwt)
 
-    app.get('/check-ins', history)
+    app.get('/check-ins/history', history)
     app.get('/check-ins/metrics', metric)
 
     app.post('/gyms/:gymId/check-ins',  create)
